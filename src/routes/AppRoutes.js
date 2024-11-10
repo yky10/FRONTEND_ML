@@ -29,6 +29,7 @@ import Ventasdiarias from "../pages/repventasdiarias";
 import ReporteVentasPorPlatillo from "../pages/repventasplatillo";
 import ReporteVentasPorMesa from "../pages/repventasmesa";
 import ReporteVentasPorMes from "../pages/repventasmes";
+import Caja from "../pages/caja";
 
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -84,6 +85,7 @@ const AppRoutes = () => {
         <Route path="repventasmesa" element={<ReporteVentasPorMesa />} />
         <Route path="repventasmes" element={<ReporteVentasPorMes />} />
         <Route path="ajustes" element={<Ajustes />} />
+        <Route path="caja" element={<Caja />} />
         <Route path="Logout" element={<Logout />} />
       </Route>
 

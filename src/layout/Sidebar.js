@@ -296,6 +296,12 @@ const Sidebar = () => {
                         )}
                         </li>
                     <li className="nav-item mb-2">
+                        <Link to="/caja" className="nav-link text-white d-flex align-items-center">
+                            <i className="bi bi-box-arrow-left me-2"></i>
+                            <span>Cuadre de Caja</span>
+                        </Link>
+                    </li>
+                    <li className="nav-item mb-2">
                         <Link to="/Logout" className="nav-link text-white d-flex align-items-center">
                             <i className="bi bi-box-arrow-left me-2"></i>
                             <span>Logout</span>

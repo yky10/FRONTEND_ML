@@ -311,9 +311,9 @@ const handleSearchClientChange = (e) => {
   let totalOrden = 0;
   selectedOrder.items.forEach((item, index) => {
     const itemName = item.nombre || item.descripcion || 'Item sin nombre';
-    const itemPrice = item.precio || 0;
     const itemQuantity = item.cantidad || 1;
-    const itemSubtotal = itemPrice * itemQuantity;
+    const itemSubtotal = item.subtotal;
+    const itemPrice = itemQuantity > 0 ? (itemSubtotal / itemQuantity) : 0;
 
     // Alinear cada campo de ítem en su columna respectiva
     const rowY = 80 + index * 10;
@@ -322,12 +322,12 @@ const handleSearchClientChange = (e) => {
     doc.text(`Q${itemPrice}`, 130, rowY);       // Precio
     doc.text(`Q${itemSubtotal}`, 160, rowY);    // Subtotal
 
-    totalOrden += itemSubtotal; // Acumular el subtotal en el total de la orden
+    totalOrden += Number(itemSubtotal);; // Acumular el subtotal en el total de la orden
   });
 
   // Mostrar el total de la orden después de la lista de ítems
   let itemsEndPosition = 80 + selectedOrder.items.length * 10;
-  doc.text(`Total de la Orden: Q${totalOrden}`, 10, itemsEndPosition + 10);
+  doc.text(`Total de la Orden: Q ${totalOrden}`, 10, itemsEndPosition + 10);
 
   doc.save('Factura_Orden.pdf');
     };
