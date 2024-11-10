@@ -13,7 +13,9 @@ function ReporteVentasDiarias() {
     const [ventas, setVentas] = useState([]);
     const [ventasFiltradas, setVentasFiltradas] = useState([]);
     const [search, setSearch] = useState("");
-    const [selectedDate, setSelectedDate] = useState(null); // Para guardar la fecha seleccionada
+    const [selectedDate, setSelectedDate] = useState(null); 
+    const [currentPage, setCurrentPage] = useState(1); // Página actual
+    const [itemsPerPage] = useState(5); // Número de elementos por página
     const reportRef = useRef();
 
     useEffect(() => {
@@ -40,10 +42,9 @@ function ReporteVentasDiarias() {
         const searchTerm = e.target.value.toLowerCase();
         setSearch(searchTerm);
 
-        // Filtra las ventas según el campo 'nombre_usuario'
         const filtered = ventas.filter(
             (venta) =>
-                venta.nombre_usuario.toLowerCase().includes(searchTerm)  // Ajustado para buscar en 'nombre_usuario'
+                venta.nombre_usuario.toLowerCase().includes(searchTerm)
         );
         setVentasFiltradas(filtered);
     };
@@ -52,52 +53,92 @@ function ReporteVentasDiarias() {
     const handleDateChange = (date) => {
         setSelectedDate(date);
         if (date) {
-            const formattedDate = date.toLocaleDateString(); // Formato de fecha en español por ejemplo "DD/MM/YYYY"
-            // Filtra las ventas por fecha seleccionada
+            const formattedDate = date.toLocaleDateString();
             const filteredByDate = ventas.filter((venta) => {
-                const fechaVenta = new Date(venta.fecha); // Asumiendo que 'venta.fecha' es un string de tipo 'YYYY-MM-DD'
+                const fechaVenta = new Date(venta.fecha);
                 return fechaVenta.toLocaleDateString() === formattedDate;
             });
             setVentasFiltradas(filteredByDate);
         } else {
-            setVentasFiltradas(ventas); // Si no se selecciona ninguna fecha, se muestran todas las ventas
+            setVentasFiltradas(ventas); 
         }
-    };
-
-    // Función para generar el PDF
-    const generarPDF = () => {
-        const input = reportRef.current;
-        html2canvas(input).then((canvas) => {
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF();
-            const imgWidth = 210; // Ancho en mm para A4
-            const pageHeight = 295; // Altura en mm para A4
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-
-            pdf.save("reporte_ventas_diarias.pdf");
-        });
     };
 
     // Función para formatear la fecha
     const formatearFecha = (fecha) => {
         const date = new Date(fecha);
         const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
+
+    // ** Llamada a generarPDF con título y descripción como cadenas de texto **
+    const titulo = "Informe de Ventas diarias"; 
+    const descripcion = "Este reporte muestra el total ventas diarias."; 
+    const contenidoTabla = "Contenido de la tabla"; 
+    
+    const generarPDF = (titulo, descripcion, contenidoTabla) => {
+        const input = reportRef.current;
+        const margenIzquierdo = 14;
+        const margenSuperior = 20;
+        const margenDerecho = 14;
+        const margenInferior = 14;
+        const imgWidth = 210 - margenIzquierdo - margenDerecho;
+
+        html2canvas(input, {
+            margin: { top: margenSuperior, left: margenIzquierdo, right: margenDerecho, bottom: margenInferior }
+        }).then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF();
+            pdf.setTextColor(255, 165, 0);
+            pdf.setFontSize(18);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(String(titulo), margenIzquierdo, margenSuperior);
+
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(String(descripcion), margenIzquierdo, margenSuperior + 10);
+
+            pdf.setLineWidth(0.5);
+            pdf.line(margenIzquierdo, margenSuperior + 12, 196 - margenDerecho, margenSuperior + 12);
+
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            const fechaGeneracion = new Date().toLocaleDateString();
+            pdf.text("Fecha de generación: " + fechaGeneracion, margenIzquierdo, margenSuperior + 25);
+            pdf.text("Página: 1", 180, margenSuperior + 25);
+
+            pdf.addImage(imgData, "PNG", margenIzquierdo, margenSuperior + 30, imgWidth, canvas.height * imgWidth / canvas.width);
+
+            const previewBlob = pdf.output('blob');
+            const url = URL.createObjectURL(previewBlob);
+
+            const previewWindow = window.open(url, '_blank');
+            previewWindow.onload = () => {
+                previewWindow.print();
+            };
+        });
+    };
+
+    // Función para paginar los datos
+    const indexOfLastVenta = currentPage * itemsPerPage;
+    const indexOfFirstVenta = indexOfLastVenta - itemsPerPage;
+    const currentVentas = ventasFiltradas.slice(indexOfFirstVenta, indexOfLastVenta);
+
+    // Función para manejar el cambio de página
+    const paginate = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= Math.ceil(ventasFiltradas.length / itemsPerPage)) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
+    // Generar los números de página
+    const totalPages = Math.ceil(ventasFiltradas.length / itemsPerPage);
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
 
     return (
         <AllowedAccess 
@@ -114,7 +155,7 @@ function ReporteVentasDiarias() {
                         <input
                             type="text"
                             value={search}
-                            onChange={handleSearch} // Llama a la función de búsqueda
+                            onChange={handleSearch}
                             className="search-input"
                             placeholder="Buscar"
                         />
@@ -123,7 +164,7 @@ function ReporteVentasDiarias() {
                     <div>
                         <DatePicker
                             selected={selectedDate}
-                            onChange={handleDateChange} // Función para manejar el cambio de fecha
+                            onChange={handleDateChange}
                             dateFormat="dd/MM/yyyy"
                             className="form-control"
                             placeholderText="  Selecciona una fecha"
@@ -142,7 +183,7 @@ function ReporteVentasDiarias() {
                             </tr>
                         </thead>
                         <tbody>
-                            {ventasFiltradas.map((venta, index) => (
+                            {currentVentas.map((venta, index) => (
                                 <tr key={index}>
                                     <td>{formatearFecha(venta.fecha)}</td>
                                     <td>{venta.total_ordenes}</td>
@@ -153,11 +194,27 @@ function ReporteVentasDiarias() {
                         </tbody>
                     </table>
                 </div>
+
                 <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary" onClick={generarPDF}>
+                    <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
                         Generar PDF
                     </button>
                 </div>
+                <nav>
+                    <ul className="pagination">
+                        {pageNumbers.map((number) => (
+                            <li key={number} className="page-item">
+                                <a
+                                    href="#!"
+                                    className="page-link"
+                                    onClick={() => paginate(number)}
+                                >
+                                    {number}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
             </div>
         </AllowedAccess>
     );

@@ -28,10 +28,21 @@ function Categoriaplato() {
             });
         } catch (error) {
             console.error('Error al guardar la categoría:', error);
+            let errorMessage = "No se pudo registrar la categoría.";
+            if (error.response) {
+                // Analizar el error recibido del servidor
+                if (error.response.status === 409) {
+                    errorMessage = "El nombre de la categoría ya existe. Por favor, elige otro nombre.";
+                } else if (error.response.status === 500) {
+                    errorMessage = "Error del servidor. Inténtalo de nuevo más tarde.";
+                }
+            }   
+    
+            // Mostrar notificación de error personalizada
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "No se pudo registrar la categoría.",
+                text: errorMessage,
             });
         }
     };

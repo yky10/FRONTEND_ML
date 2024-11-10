@@ -85,9 +85,8 @@ function Platillos() {
             formData.append("nombre", nombre);
             formData.append("categoria_id", categoriaId);
             formData.append("precio", precio);
-            if (imagen) {
-                formData.append("imagen", imagen);
-            }
+            formData.append("imagen", imagen);
+
 
             await Axios.put("http://localhost:3001/platillos/actualizar", formData, {
                 headers: {
@@ -130,9 +129,6 @@ function Platillos() {
         setImagen(platillo.imagen); // Establecer la imagen actual del platillo para edición
     };
 
-    const manejarImagen = (e) => {
-        setImagen(e.target.files[0]); // Almacenamos el archivo de imagen en el estado
-    };
 
     return (
         <AllowedAccess 
@@ -178,15 +174,14 @@ function Platillos() {
                                 value={precio}
                             />
                         </div>
-                        {/* Input para cargar imagen */}
                         <div className="input-group mb-3">
                             <span className="input-group-text" id="basic-addon1">
                                 Imagen:{" "}
                             </span>
                             <input
-                                type="file"
-                                accept="image/*" // Solo acepta imágenes
-                                onChange={manejarImagen}
+                                type="text"
+                                onChange={(event) => setImagen(event.target.value)}
+                                value={imagen}
                             />
                         </div>
                     </div>

@@ -67,39 +67,6 @@ function Empleado() {
     });
   };
 
-  const deletepersona = (val) => {
-    Swal.fire({
-      title: "Confirmar Eliminado",
-      html: `<i>¿Está seguro que desea eliminar a <strong>${val.primer_nombre} ${val.primer_apellido}</strong>?</i>`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#4CAF50",
-      cancelButtonColor: "#F44336",
-      confirmButtonText: "Sí, eliminarlo!",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Axios.delete(`http://localhost:3001/delete/${val.id}`).then(() => {
-          getPersona();
-          limpiarcampos();
-          Swal.fire({
-            title: "Eliminado!",
-            html: `<strong>${val.primer_nombre} ${val.primer_apellido}</strong> fue eliminado`,
-            icon: "success",
-            timer: 2000,
-          });
-        }).catch((error) => {
-          const errorMessage = error.response?.data?.message || `No se logró eliminar a <strong>${val.primer_nombre} ${val.primer_apellido}</strong>`;
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            html: errorMessage,
-            footer: error.message === "Network Error" ? "Intente más tarde" : error.message
-          });
-        });
-      }
-    });
-  };
 
   const limpiarcampos = () => {
     setprimerNombre("");
@@ -270,7 +237,6 @@ function Empleado() {
                   <td>{val.email}</td>
                   <td>
                     <button className="btn btn-info m-2" onClick={() => editarpersona(val)}>Editar</button>
-                    <button className="btn btn-danger m-2" onClick={() => deletepersona(val)}>Eliminar</button>
                   </td>
                 </tr>
               ))}

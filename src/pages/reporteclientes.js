@@ -67,29 +67,51 @@ function ReporteCliente() {
 
     const currentSortedItems = sortedItems.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Función para generar el PDF
-    const generarPDF = () => {
+    // ** Llamada a generarPDF con título y descripción como cadenas de texto **
+    const titulo = "Informe de Clientes"; 
+    const descripcion = "Este reporte muestra el total de Clientes."; 
+    const contenidoTabla = "Contenido de la tabla"; 
+    
+    const generarPDF = (titulo, descripcion, contenidoTabla) => {
         const input = reportRef.current;
-        html2canvas(input).then((canvas) => {
+        const margenIzquierdo = 14;
+        const margenSuperior = 20;
+        const margenDerecho = 14;
+        const margenInferior = 14;
+        const imgWidth = 210 - margenIzquierdo - margenDerecho;
+
+        html2canvas(input, {
+            margin: { top: margenSuperior, left: margenIzquierdo, right: margenDerecho, bottom: margenInferior }
+        }).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
             const pdf = new jsPDF();
-            const imgWidth = 210; // Ancho en mm para A4
-            const pageHeight = 295; // Altura en mm para A4
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
+            pdf.setTextColor(255, 165, 0);
+            pdf.setFontSize(18);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(String(titulo), margenIzquierdo, margenSuperior);
 
-            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(String(descripcion), margenIzquierdo, margenSuperior + 10);
 
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
+            pdf.setLineWidth(0.5);
+            pdf.line(margenIzquierdo, margenSuperior + 12, 196 - margenDerecho, margenSuperior + 12);
 
-            pdf.save("reporte_clientes.pdf");
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            const fechaGeneracion = new Date().toLocaleDateString();
+            pdf.text("Fecha de generación: " + fechaGeneracion, margenIzquierdo, margenSuperior + 25);
+            pdf.text("Página: 1", 180, margenSuperior + 25);
+
+            pdf.addImage(imgData, "PNG", margenIzquierdo, margenSuperior + 30, imgWidth, canvas.height * imgWidth / canvas.width);
+
+            const previewBlob = pdf.output('blob');
+            const url = URL.createObjectURL(previewBlob);
+
+            const previewWindow = window.open(url, '_blank');
+            previewWindow.onload = () => {
+                previewWindow.print();
+            };
         });
     };
 
@@ -128,9 +150,9 @@ function ReporteCliente() {
                     </table>
                 </div>
                 <div className="d-flex justify-content-end"> {/* Botón alineado a la derecha */}
-                    <button className="btn btn-primary" onClick={generarPDF}>
-                        Generar PDF
-                    </button>
+                <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
+                    Generar PDF
+                </button>
                 </div>
                 <nav>
                     <ul className="pagination">

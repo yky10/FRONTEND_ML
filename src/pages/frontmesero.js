@@ -292,6 +292,9 @@ const enviarOrden = async (ordenId) => {
     setOrdenGenerada(false); // Oculta el menú de platillos
 };
     
+const todosLosPlatillosConfirmados = () => {
+    return pedido.length > 0 && pedido.every(item => item.confirmado);
+};
     
     return (
         <div className="nuevo-container">
@@ -394,7 +397,13 @@ const enviarOrden = async (ordenId) => {
                         <p className="nuevo-total">
                 Total: Q{pedido.reduce((total, item) => total + parseFloat(item.precio) * item.cantidad, 0).toFixed(2)}
                         </p>
-                        <button onClick={() => enviarOrden(ordenId)} className="nuevo-finalizar-btn">Confirmar Pedido</button>
+                        <button
+                            onClick={() => enviarOrden(ordenId)}
+                            className="nuevo-finalizar-btn"
+                            disabled={!todosLosPlatillosConfirmados()}
+                        >
+                            Confirmar Pedido
+                        </button>
                     </div>
                 </>
             )}

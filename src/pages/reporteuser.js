@@ -91,28 +91,69 @@ function ReporteUser() {
 
     const currentSortedItems = sortedItems.slice(indexOfFirstItem, indexOfLastItem);
 
-    const generarPDF = () => {
+    // ** Llamada a generarPDF con título y descripción como cadenas de texto **
+    const titulo = "Informe de Usuarios"; // Título como cadena
+    const descripcion = "Este reporte muestra el total usuarios en el sistema."; // Descripción como cadena
+    const contenidoTabla = "Contenido de la tabla"; // Agrega el contenido que desees para la tabla
+
+    const generarPDF = (titulo, descripcion, contenidoTabla) => {
         const input = reportRef.current;
-        html2canvas(input).then((canvas) => {
+
+        // Definir márgenes (en mm)
+        const margenIzquierdo = 14;
+        const margenSuperior = 20;
+        const margenDerecho = 14;
+        const margenInferior = 14;
+
+        // Ancho de la página A4
+        const imgWidth = 210 - margenIzquierdo - margenDerecho; // Ancho total menos márgenes
+
+        // Generar la imagen del contenido de la tabla usando html2canvas
+        html2canvas(input, {
+            margin: { top: margenSuperior, left: margenIzquierdo, right: margenDerecho, bottom: margenInferior }
+        }).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
             const pdf = new jsPDF();
-            const imgWidth = 210; // Ancho en mm para A4
-            const pageHeight = 295; // Altura en mm para A4
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
 
-            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            // Cambiar el color del título a naranja
+            pdf.setTextColor(255, 165, 0); // RGB para el color naranja
+            pdf.setFontSize(18);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(String(titulo), margenIzquierdo, margenSuperior); // Título dinámico como string
 
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
+            // Descripción debajo del título
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(String(descripcion), margenIzquierdo, margenSuperior + 10); // Descripción dinámica como string
 
-            pdf.save("reporte_usuarios.pdf");
+            // Línea separadora debajo de la descripción
+            pdf.setLineWidth(0.5);
+            pdf.line(margenIzquierdo, margenSuperior + 12, 196 - margenDerecho, margenSuperior + 12);  // Línea horizontal
+
+            // Fecha de generación y número de página
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            const fechaGeneracion = new Date().toLocaleDateString(); // formato dd/mm/yyyy
+            pdf.text("Fecha de generación: " + fechaGeneracion, margenIzquierdo, margenSuperior + 25);
+            pdf.text("Página: 1", 180, margenSuperior + 25); // Número de página
+
+            // Agregar la imagen de la tabla, respetando los márgenes
+            pdf.addImage(imgData, "PNG", margenIzquierdo, margenSuperior + 30, imgWidth, canvas.height * imgWidth / canvas.width);
+
+            // Generar la vista previa del PDF (en lugar de descarga directa)
+            const previewBlob = pdf.output('blob');
+            const url = URL.createObjectURL(previewBlob);
+
+            // Abrir la vista previa en una nueva ventana
+            const previewWindow = window.open(url, '_blank');
+
+            // Después de cargar la ventana de vista previa, podemos permitir al usuario imprimir o descargar
+            previewWindow.onload = () => {
+                previewWindow.print(); // Esto abrirá el cuadro de diálogo de impresión automáticamente, si lo prefieres.
+            };
+
+            // Si prefieres permitir que el usuario descargue el archivo manualmente, descomenta esta línea
+            // pdf.save('reporte_ventas_por_mesa.pdf');
         });
     };
 
@@ -161,9 +202,9 @@ function ReporteUser() {
                     </table>
                 </div>
                 <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary" onClick={generarPDF}>
-                        Generar PDF
-                    </button>
+                <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
+                    Generar PDF
+                </button>
                 </div>
                 <nav>
                     <ul className="pagination">

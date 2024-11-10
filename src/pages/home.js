@@ -67,7 +67,8 @@ const Home = () => {
                     <strong>Orden #{orden.id}</strong> - 
                     <span>Mesa {orden.mesa_id}</span> - 
                     <span>Estado: {orden.estado}</span> - 
-                    <span>Mesero: {orden.mesero}</span>
+                    <span>Mesero: {orden.mesero}</span> - 
+                    <span>Hora: {orden.hora_orden}</span>
                   </li>
                 ))
               ) : (
