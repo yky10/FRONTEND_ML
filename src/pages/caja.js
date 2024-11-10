@@ -4,7 +4,7 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 const Caja = () => {
-    const [fecha, setFecha] = useState("2024-11-04"); // Valor inicial
+    const [fecha, setFecha] = useState("2024-11-07"); // Valor inicial
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

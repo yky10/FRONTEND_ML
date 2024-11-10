@@ -215,42 +215,44 @@ function Usuario() {
             )}
           </div>
         </div>
+{/* Tabla de usuarios */}
+<div className="table-responsive">
+  <table className="usuario-table table table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Empleado</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Usuario</th>
+        <th>Fecha de creación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {usuariolista.map((val) => {
+        const empleado = personas.find(p => p.id === val.id_persona);
+        const rol = roles.find(r => r.id_rol === val.rol_id);
+        const estado = estados.find(e => e.id_estado === val.estado_id);
 
-        {/* Tabla de usuarios */}
-        <table className="usuario-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Empleado</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Usuario</th>
-              <th>Fecha de creación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuariolista.map((val) => {
-              const empleado = personas.find(p => p.id === val.id_persona);
-              const rol = roles.find(r => r.id_rol === val.rol_id);
-              const estado = estados.find(e => e.id_estado === val.estado_id);
+        return (
+          <tr key={val.id_usuario}>
+            <td>{val.id_usuario}</td>
+            <td>{empleado ? empleado.primer_nombre : "No disponible"}</td>
+            <td>{rol ? rol.nombre : "No disponible"}</td>
+            <td>{estado ? estado.descripcion : "No disponible"}</td>
+            <td>{val.username}</td>
+            <td>{val.fecha_creacion}</td>
+            <td>
+              <button className="btn btn-info" onClick={() => editarUsuario(val)}>Editar</button>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
 
-              return (
-                <tr key={val.id_usuario}>
-                  <td>{val.id_usuario}</td>
-                  <td>{empleado ? empleado.primer_nombre : "No disponible"}</td>
-                  <td>{rol ? rol.nombre : "No disponible"}</td>
-                  <td>{estado ? estado.descripcion : "No disponible"}</td>
-                  <td>{val.username}</td>
-                  <td>{val.fecha_creacion}</td>
-                  <td>
-                    <button className="btn btn-info" onClick={() => editarUsuario(val)}>Editar</button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
     </AllowedAccess>
   );

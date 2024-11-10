@@ -142,19 +142,16 @@ function Platillos() {
                     <div className="card-header">FORMULARIO CREAR PLATILLO</div>
                     <div className="card-body">
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">
-                                Nombre del Platillo:{" "}
-                            </span>
+                            <label className="plat">Nombre del Platillo:</label>
                             <input
                                 type="text"
                                 onChange={(event) => setNombre(event.target.value)}
                                 value={nombre}
+                                placeholder="Ingrese el nombre del platillo"
                             />
                         </div>
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">
-                                Categoría:{" "}
-                            </span>
+                        <label className="plat">Categoria:</label>
                             <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
                                 <option value="">Seleccione una categoría</option>
                                 {categorias.map((categoria) => (
@@ -165,19 +162,16 @@ function Platillos() {
                             </select>
                         </div>
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">
-                                Precio:{" "}
-                            </span>
+                        <label className="plat">Precio:</label>
                             <input
                                 type="number"
                                 onChange={(event) => setPrecio(event.target.value)}
                                 value={precio}
+                                className="Ingrese el Precio"
                             />
                         </div>
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">
-                                Imagen:{" "}
-                            </span>
+                            <label className="plat">Imagen:</label>
                             <input
                                 type="text"
                                 onChange={(event) => setImagen(event.target.value)}

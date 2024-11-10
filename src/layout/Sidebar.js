@@ -16,6 +16,10 @@ const Sidebar = () => {
         setIsOpen(!isOpen);
     };
 
+    const closeSidebar = () => {
+        setIsOpen(false);
+    };
+
     const toggleRegistros = () => {
         setShowRegistros(!showRegistros);
         setShowMenu(false);
@@ -53,31 +57,35 @@ const Sidebar = () => {
     };
 
 
+
     return (
         <>
             <button
-                className="btn d-md-none m-3"
+                className="sidebar-toggle-btn d-md-none"
                 onClick={toggleSidebar}
-                style={{ backgroundColor: '#FF6700', color: 'white' }}
             >
                 <i className="bi bi-list"></i>
             </button>
 
+            {isOpen && (
+                <div className="sidebar-overlay d-md-none" onClick={closeSidebar}></div>
+            )}
+
             <div
-                className={`vh-100 p-3 d-flex flex-column ${isOpen ? 'd-block' : 'd-none'} d-md-block`}
-                style={{ minWidth: '225px', backgroundColor: '#FF6700', color: 'white' }}
+                className={`sidebar-container ${isOpen ? 'open' : ''} vh-100 p-3 d-flex flex-column d-md-block`}
             >
                 <h4 className="text-white">MiraLago</h4>
                 <ul className="nav flex-column">
                     <li className="nav-item mb-2">
-                        <Link to="/home" className="nav-link text-white d-flex align-items-center">
+                        <Link to="/home" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                             <i className="bi bi-house-door-fill me-2"></i>
                             <span>Home</span>
                         </Link>
                     </li>
+                    
 
-                    {/* Modulo Usuarios*/}
-                    <li className="nav-item mb-2">
+                   {/* Modulo Usuarios*/}
+                   <li className="nav-item mb-2">
                         <button
                             className="btn btn-link nav-link text-white d-flex align-items-center"
                             onClick={toggleRegistros}
@@ -90,25 +98,25 @@ const Sidebar = () => {
                         {showRegistros && (
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
-                                    <Link to="/usuario" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/usuario" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-person-fill me-2"></i>
                                         <span>Usuario</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/empleado" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/empleado" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-person-badge-fill me-2"></i>
                                         <span>Empleado</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/reporteuser" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/reporteuser" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-person-lines-fill me-2"></i>
                                         <span>Reporte Usuarios</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/reporteempleado" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/reporteempleado" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-person-video2 me-2"></i>
                                         <span>Reporte Empleados</span>
                                     </Link>
@@ -131,13 +139,13 @@ const Sidebar = () => {
                         {showClientes && (
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
-                                    <Link to="/clientes" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/clientes" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-person-fill me-2"></i>
                                         <span>Clientes</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/reporteclientes" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/reporteclientes" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-person-badge-fill me-2"></i>
                                         <span>Reporte Clientes</span>
                                     </Link>
@@ -160,19 +168,19 @@ const Sidebar = () => {
                         {showMenu && (
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
-                                    <Link to="/categoriaplato" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/categoriaplato" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-menu-button-fill me-2"></i>
                                         <span>Categoria Platillo</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/plato" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/plato" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-egg-fried me-2"></i>
                                         <span>Platillo</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/mesa" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/mesa" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-align-top me-2"></i>
                                         <span>Mesa</span>
                                     </Link>
@@ -190,7 +198,7 @@ const Sidebar = () => {
                                     </Link>
                                 </li> */}
                                 <li className="nav-item mb-2">
-                                    <Link to="/reporteplato" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/reporteplato" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-card-heading me-2"></i>
                                         <span>Reporte Platillo</span>
                                     </Link>
@@ -212,19 +220,19 @@ const Sidebar = () => {
                         {showMesero && (
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
-                                    <Link to="/frontmesero" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/frontmesero" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i class='bx bx-edit'></i>
                                         <span>Tomar Orden</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/ordeneslistas" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/ordeneslistas" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i class='bx bx-list-check'></i>
                                         <span>Ordenes Listas</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/Factura" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/Factura" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-archive me-2"></i>
                                         <span>Generar factura</span>
                                     </Link>
@@ -246,7 +254,7 @@ const Sidebar = () => {
                         {showCocina && (
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
-                                    <Link to="/Cocina" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/Cocina" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i className="bi bi-hourglass-split me-2"></i>
                                         <span>Órdenes Activas</span>
                                     </Link>
@@ -269,25 +277,25 @@ const Sidebar = () => {
                         {showReportes && (
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
-                                    <Link to="/ventasdiarias" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/ventasdiarias" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i class='bx bx-edit'></i>
                                         <span>Ventas Diarias</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/repventasplatillo " className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/repventasplatillo " className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i class='bx bx-list-check'></i>
                                         <span>Ventas por Platillos</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/repventasmesa" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/repventasmesa" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}> 
                                         <i class='bx bx-list-check'></i>
                                         <span>Ventas por Mesa</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
-                                    <Link to="/repventasmes" className="nav-link text-white d-flex align-items-center">
+                                    <Link to="/repventasmes" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                                         <i class='bx bx-list-check'></i>
                                         <span>Ventas por Mes</span>
                                     </Link>
@@ -296,13 +304,13 @@ const Sidebar = () => {
                         )}
                         </li>
                     <li className="nav-item mb-2">
-                        <Link to="/caja" className="nav-link text-white d-flex align-items-center">
+                        <Link to="/caja" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                             <i className="bi bi-box-arrow-left me-2"></i>
                             <span>Cuadre de Caja</span>
                         </Link>
                     </li>
                     <li className="nav-item mb-2">
-                        <Link to="/Logout" className="nav-link text-white d-flex align-items-center">
+                        <Link to="/Logout" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
                             <i className="bi bi-box-arrow-left me-2"></i>
                             <span>Logout</span>
                         </Link>
@@ -314,4 +322,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

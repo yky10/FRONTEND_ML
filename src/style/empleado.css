@@ -158,6 +158,10 @@ body {
   margin: 20px 0;
 }
 
+.plat {
+  text-align: left;
+}
+
 .search-input {
   width: 100%; /* Hacer que el input de búsqueda ocupe todo el ancho */
   padding: 10px 0; /* Ajusta el padding superior e inferior */

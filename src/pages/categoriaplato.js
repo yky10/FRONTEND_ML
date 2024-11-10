@@ -153,7 +153,7 @@ function Categoriaplato() {
                     <div className="card-header">FORMULARIO DE CATEGORÍAS</div>
                     <div className="card-body">
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">Nombre: </span>
+                            <label className="Cat">Categoria:</label>
                             <input
                             type="text"
                             onChange={(event) => setNombre(event.target.value)}

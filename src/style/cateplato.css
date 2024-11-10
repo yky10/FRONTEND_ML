@@ -60,6 +60,10 @@ body {
     color: #FF7B00;
     margin-bottom: 8px;
   }
+
+  .Cat{
+    text-align: left;
+  }
   
   /* Input con fondo transparente y línea inferior */
   .form-control {
@@ -93,6 +97,7 @@ body {
   
   .btn-primary {
     background-color: #FF7B00;
+    align-items: center;
   }
   
   .btn-primary:hover {

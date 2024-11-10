@@ -113,21 +113,23 @@ function Mesa() {
                     <div className="card-header">FORMULARIO CREAR MESA</div>
                     <div className="card-body">
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">Número de Mesa: </span>
+                        <label className="plat">Numero de Mesa:</label>
                             <input
                                 type="number"
                                 onChange={(event) => setNumero(event.target.value)}
                                 //className="form-control"
                                 value={numero}
+                                placeholder="Ingrese el numero de mesa"
                             />
                         </div>
                         <div className="input-group mb-3">
-                            <span className="input-group-text" id="basic-addon1">Capacidad Máxima: </span>
+                            <label className="plat">Capacidad Maxima:</label>
                             <input
                                 type="number"
                                 onChange={(event) => setCapacidadMax(event.target.value)}
                                 //className="form-control"
                                 value={capacidadMax}
+                                placeholder="Ingrese la capacidad maxima de la mesa"
                             />
                         </div>
                     </div>
