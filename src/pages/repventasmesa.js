@@ -9,7 +9,7 @@ function ReporteVentasPorMesa() {
     const [ventasFiltradas, setVentasFiltradas] = useState([]);
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); // Definir el número de items por página
+    const [itemsPerPage] = useState(20); // Definir el número de items por página
     const reportRef = useRef();
 
     useEffect(() => {

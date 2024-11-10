@@ -14,7 +14,7 @@ function Cliente() {
     const [clienteList, setClienteList] = useState([]); 
     const [editar, setEditarCliente] = useState(false); 
     const [currentPage, setCurrentPage] = useState(1); 
-    const itemsPerPage = 3; 
+    const itemsPerPage = 5; 
     const [searchTerm, setSearchTerm] = useState(""); 
 
     const addCliente = () => { 

@@ -15,7 +15,7 @@ function ReporteVentasDiarias() {
     const [search, setSearch] = useState("");
     const [selectedDate, setSelectedDate] = useState(null); 
     const [currentPage, setCurrentPage] = useState(1); // Página actual
-    const [itemsPerPage] = useState(5); // Número de elementos por página
+    const [itemsPerPage] = useState(15); // Número de elementos por página
     const reportRef = useRef();
 
     useEffect(() => {

@@ -13,7 +13,7 @@ function ReporteCliente() {
     
     // Paginación
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const itemsPerPage = 15;
 
     // Estado para ordenación
     const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
