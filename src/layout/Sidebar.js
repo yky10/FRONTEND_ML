@@ -277,25 +277,25 @@ const Sidebar = () => {
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
                                     <Link to="/ventasdiarias" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i className='bx bx-edit'></i>
+                                        <i className='bi bi-file-earmark-bar-graph-fill'></i>
                                         <span>Ventas Diarias</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/repventasplatillo " className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i className='bx bx-list-check'></i>
+                                        <i className='bi bi-file-earmark-bar-graph-fill'></i>
                                         <span>Ventas por Platillos</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/repventasmesa" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}> 
-                                        <i className='bx bx-list-check'></i>
+                                        <i className='bi bi-file-earmark-bar-graph-fill'></i>
                                         <span>Ventas por Mesa</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/repventasmes" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i className='bx bx-list-check'></i>
+                                        <i className='bi bi-file-earmark-bar-graph-fill'></i>
                                         <span>Ventas por Mes</span>
                                     </Link>
                                 </li>
@@ -304,7 +304,7 @@ const Sidebar = () => {
                         </li>
                     <li className="nav-item mb-2">
                         <Link to="/caja" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                            <i className="bi bi-box-arrow-left me-2"></i>
+                            <i className="bi bi-cart-check-fill"></i>
                             <span>Cuadre de Caja</span>
                         </Link>
                     </li>
