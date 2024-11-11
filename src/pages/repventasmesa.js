@@ -4,6 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../style/empleado.css";
+import { AllowedAccess } from 'react-permission-role';
+import NoPermission from "./NoPermission";
 
 
 function ReporteVentasPorMesa() {
@@ -103,6 +105,12 @@ function ReporteVentasPorMesa() {
     for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
 
     return (
+        <AllowedAccess 
+        roles={["admin"]} 
+        permissions="manage-users" 
+        renderAuthFailed={<NoPermission />}
+        isLoading={<p>Cargando...</p>}
+    >
         <div className="container">
             <h1>Informe de Ventas por Mesa</h1>
             <br />
@@ -163,6 +171,7 @@ function ReporteVentasPorMesa() {
                 </ul>
             </nav>
         </div>
+        </AllowedAccess>
     );
 }
 
