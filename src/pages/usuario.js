@@ -102,8 +102,7 @@ function Usuario() {
   };
 
   const updateUser = () => {
-    Axios.put("http://localhost:3001/updateuser", {
-      id_usuario: id,
+  Axios.put(`http://localhost:3001/actualizar/${id}`, {
       id_persona: idPersona,
       rol_id: idRol,
       estado_id: idEstado,
