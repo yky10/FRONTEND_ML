@@ -304,7 +304,7 @@ const Sidebar = () => {
                         </li>
                     <li className="nav-item mb-2">
                         <Link to="/caja" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                            <i className="bi bi-cart-check-fill"></i>
+                        <i className='bx bx-money-withdraw'></i>
                             <span>Cuadre de Caja</span>
                         </Link>
                     </li>
