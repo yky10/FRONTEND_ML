@@ -10,6 +10,8 @@ function ReporteVentasPorMesa() {
     const [ventasPorMesa, setVentasPorMesa] = useState([]);
     const [ventasFiltradas, setVentasFiltradas] = useState([]);
     const [search, setSearch] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(20);
     const reportRef = useRef();
@@ -31,6 +33,7 @@ function ReporteVentasPorMesa() {
     const handleSearch = (e) => {
         const searchTerm = e.target.value.toLowerCase();
         setSearch(searchTerm);
+/*
         filtrarResultados(searchTerm);
     };
 
@@ -42,6 +45,32 @@ function ReporteVentasPorMesa() {
                 venta.anio.toString().includes(searchTerm) ||
                 venta.mes.toString().includes(searchTerm);
             return matchesSearch;
+*/
+        filtrarResultados(searchTerm, startDate, endDate);
+    };
+
+    const handleDateChange = (start, end) => {
+        setStartDate(start);
+        setEndDate(end);
+        filtrarResultados(search, start, end);
+    };
+
+    const filtrarResultados = (searchTerm, start, end) => {
+        const filtered = ventasPorMesa.filter((venta) => {
+            const ventaFecha = new Date(venta.fecha); // Reemplaza `fecha` con el nombre correcto de la columna de fecha en tus datos
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
+
+            const matchesSearch =
+                venta.numero_mesa.toString().includes(searchTerm) ||
+                venta.total_ventas.toString().includes(searchTerm);
+
+            const matchesDate =
+                (!startDate || ventaFecha >= startDate) &&
+                (!endDate || ventaFecha <= endDate);
+
+            return matchesSearch && matchesDate;
+
         });
         setVentasFiltradas(filtered);
     };
@@ -114,6 +143,22 @@ function ReporteVentasPorMesa() {
                         onChange={handleSearch}
                         className="search-input"
                         placeholder="Buscar por mesa, total o fecha (año/mes)"
+                    />
+                </div>
+                <div className="date-filter-container d-flex">
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => handleDateChange(e.target.value, endDate)}
+                        className="form-control mx-1"
+                        placeholder="Fecha de inicio"
+                    />
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => handleDateChange(startDate, e.target.value)}
+                        className="form-control mx-1"
+                        placeholder="Fecha de fin"
                     />
                 </div>
             </div>

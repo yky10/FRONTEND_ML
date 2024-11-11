@@ -14,6 +14,7 @@ function ReportePlatos() {
     const reportRef = useRef(); 
 
     const [currentPage, setCurrentPage] = useState(1);
+
     const itemsPerPage = 14;
 
     const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
