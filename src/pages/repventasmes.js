@@ -3,47 +3,73 @@ import Axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { AllowedAccess } from 'react-permission-role';
+import NoPermission from "./NoPermission";
+import "../style/empleado.css";
 
-function ReporteVentasPorMesa() {
-    const [ventasPorMesa, setVentasPorMesa] = useState([]);
-    const [ventasFiltradas, setVentasFiltradas] = useState([]);
-    const [search, setSearch] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // Cambiar el número de elementos por página si es necesario
-    const reportRef = useRef();
+    function ReporteVentasPorMes() {
+        const [ventas, setVentas] = useState([]);
+        const [ventasFiltradas, setVentasFiltradas] = useState([]);
+        const [search, setSearch] = useState("");
+        const reportRef = useRef();
+        const [currentPage, setCurrentPage] = useState(1);
+        const [itemsPerPage] = useState(5); // Cambiar el número de elementos por página si es necesario
 
-    useEffect(() => {
-        const fetchVentasPorMesa = async () => {
-            try {
-                const response = await Axios.get("http://localhost:3001/reporte/ventas-por-mesa");
-                setVentasPorMesa(response.data.reporte);
-                setVentasFiltradas(response.data.reporte);
-            } catch (error) {
-                console.error("Error al obtener ventas por mesa:", error);
-            }
-        };
+        useEffect(() => {
+            const fetchVentas = async () => {
+                try {
+                    const response = await Axios.get("http://localhost:3001/reporte/ventas-por-mes");
+                    setVentas(response.data.reporte);
+                    setVentasFiltradas(response.data.reporte); // Inicializamos con todos los datos
+                } catch (error) {
+                    console.error("Error al obtener ventas por mes:", error);
+                }
+            };
+    
+            fetchVentas();
+        }, []);
 
-        fetchVentasPorMesa();
-    }, []);
 
-    const handleSearch = (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        setSearch(searchTerm);
+// Función para manejar la búsqueda por texto
+const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    setSearch(searchTerm);
 
-        const filtered = ventasPorMesa.filter(
-            (venta) =>
-                venta.numero_mesa.toString().includes(searchTerm) ||
-                venta.total_ventas.toString().includes(searchTerm)
-        );
-        setVentasFiltradas(filtered);
+    // Filtra las ventas según el campo 'anio' y 'mes'
+    const filtered = ventas.filter(
+        (venta) =>
+            `${venta.anio}-${venta.mes}`.toLowerCase().includes(searchTerm)
+    );
+    setVentasFiltradas(filtered);
+};
+
+// Función para ordenar los datos por fecha
+const handleSort = () => {
+    const sorted = [...ventasFiltradas].sort((a, b) => {
+        if (a.anio === b.anio) {
+            return a.mes - b.mes;
+        }
+        return a.anio - b.anio;
+    });
+    setVentasFiltradas(sorted);
+};
+
+    // Función para manejar la paginación
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
-    // ** Paginación: Dividir los datos por páginas **
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = ventasFiltradas.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(ventasFiltradas.length / itemsPerPage);
+    const currentData = ventasFiltradas.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
+
 
     // ** Llamada a generarPDF con título y descripción como cadenas de texto **
     const titulo = "Informe de Ventas por Mesa"; // Título como cadena
@@ -115,47 +141,50 @@ function ReporteVentasPorMesa() {
     };
 
     return (
-        <div className="container">
-            <h1>Informe de Ventas por Mesa</h1>
-            <br />
-            <div className="d-flex justify-content-end mb-4">
-                <div className="search-container">
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={handleSearch} // Llama a la función de búsqueda
-                        className="search-input"
-                        placeholder="Buscar"
-                    />
+        <AllowedAccess 
+            roles={["admin"]} 
+            permissions="manage-users" 
+            renderAuthFailed={<NoPermission />}
+            isLoading={<p>Cargando...</p>}
+        >
+            <div className="container">
+                <h1>Informe de Ventas por Mes</h1>
+                <br />
+                <div className="d-flex justify-content-between mb-4">
+                    <div className="search-container">
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={handleSearch} // Llama a la función de búsqueda
+                            className="search-input"
+                            placeholder="Buscar (ej. 2023-05)"
+                        />
+                    </div>
+
+                    <button className="btn btn-secondary" onClick={handleSort}>
+                        Ordenar por fecha
+                    </button>
                 </div>
-            </div>
 
-            <div ref={reportRef}>
-                <table className="table table-striped table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Número de Mesa</th>
-                            <th scope="col">Total Ventas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentItems.length === 0 ? (
+                <div ref={reportRef}>
+                    <table className="table table-striped">
+                        <thead>
                             <tr>
-                                <td colSpan="2">No se encontraron resultados</td>
+                                <th scope="col">Año-Mes</th>
+                                <th scope="col">Total Ventas</th>
                             </tr>
-                        ) : (
-                            currentItems.map((venta, index) => (
+                        </thead>
+                        <tbody>
+                            {currentData.map((venta, index) => (
                                 <tr key={index}>
-                                    <td>{venta.numero_mesa}</td>
-                                    <td>{parseFloat(venta.total_ventas).toFixed(2)}</td>
+                                    <td>{`${venta.anio}-${String(venta.mes).padStart(2, '0')}`}</td>
+                                    <td>{Number(venta.total_ventas).toFixed(2)}</td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Paginación */}
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                 {/* Paginación */}
             <div className="d-flex justify-content-center">
                 <nav>
                     <ul className="pagination">
@@ -175,14 +204,14 @@ function ReporteVentasPorMesa() {
                     </ul>
                 </nav>
             </div>
-
-            <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end">
                 <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
-                    Generar PDF
-                </button>
+                        Generar PDF
+                    </button>
+                </div>
             </div>
-        </div>
+        </AllowedAccess>
     );
 }
 
-export default ReporteVentasPorMesa;
+export default ReporteVentasPorMes;
