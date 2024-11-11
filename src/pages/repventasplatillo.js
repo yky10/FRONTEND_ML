@@ -15,7 +15,7 @@ function ReporteVentasPlatillo() {
     const [sortOrder, setSortOrder] = useState("desc");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
-    const reportRef = useRef();
+    const reportRef = useRef(); // Ref para el contenedor de la tabla
 
     useEffect(() => {
         const fetchVentas = async () => {
@@ -82,6 +82,12 @@ function ReporteVentasPlatillo() {
 
     const generarPDF = (titulo, descripcion, contenidoTabla) => {
         const input = reportRef.current;
+
+        // Verificar si el ref es válido
+        if (!input) {
+            console.error("Referencia al elemento no válida.");
+            return;
+        }
 
         // Definir márgenes (en mm)
         const margenIzquierdo = 14;
@@ -162,30 +168,32 @@ function ReporteVentasPlatillo() {
                         />
                     </div>
                 </div>
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col" onClick={() => handleSort("nombre_platillo")}>
-                                Nombre Platillo {sortColumn === "nombre_platillo" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-                            </th>
-                            <th scope="col" onClick={() => handleSort("cantidad_vendida")}>
-                                Cantidad Vendida {sortColumn === "cantidad_vendida" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-                            </th>
-                            <th scope="col" onClick={() => handleSort("total_ventas")}>
-                                Total Ventas {sortColumn === "total_ventas" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentSortedItems.map((venta, index) => (
-                            <tr key={index}>
-                                <td>{venta.nombre_platillo}</td>
-                                <td>{venta.cantidad_vendida}</td>
-                                <td>{venta.total_ventas}</td>
+                <div ref={reportRef}>
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col" onClick={() => handleSort("nombre_platillo")}>
+                                    Nombre Platillo {sortColumn === "nombre_platillo" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                                </th>
+                                <th scope="col" onClick={() => handleSort("cantidad_vendida")}>
+                                    Cantidad Vendida {sortColumn === "cantidad_vendida" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                                </th>
+                                <th scope="col" onClick={() => handleSort("total_ventas")}>
+                                    Total Ventas {sortColumn === "total_ventas" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {currentSortedItems.map((venta, index) => (
+                                <tr key={index}>
+                                    <td>{venta.nombre_platillo}</td>
+                                    <td>{venta.cantidad_vendida}</td>
+                                    <td>{venta.total_ventas}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <div className="d-flex justify-content-center mb-4">
                     <ul className="pagination">
                         {pageNumbers.map((number) => (
@@ -202,7 +210,7 @@ function ReporteVentasPlatillo() {
                 </div>
                 <div className="d-flex justify-content-end">
                     <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
-                        Descargar PDF
+                        Generar PDF
                     </button>
                 </div>
             </div>
