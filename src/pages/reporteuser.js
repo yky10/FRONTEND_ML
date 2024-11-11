@@ -15,7 +15,7 @@ function ReporteUser() {
     const [estados, setEstados] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const itemsPerPage = 15;
     const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
     const reportRef = useRef();
 

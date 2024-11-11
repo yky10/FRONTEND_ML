@@ -14,7 +14,7 @@ function ReporteVentasPlatillo() {
     const [sortColumn, setSortColumn] = useState("total_ventas");
     const [sortOrder, setSortOrder] = useState("desc");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const itemsPerPage = 20;
     const reportRef = useRef();
 
     useEffect(() => {

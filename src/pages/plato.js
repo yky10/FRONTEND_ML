@@ -10,12 +10,13 @@ function Platillos() {
     // Hooks de Platillos
     const [id, setId] = useState(""); /*este id es id_platillos */
     const [nombre, setNombre] = useState("");
-    const [categoriaId, setCategoriaId] = useState("");
+    const [categoria_id, setCategoriaId] = useState("");
     const [precio, setPrecio] = useState("");
+    const [descripcion, setDescripcion] = useState("");
     const [listaPlatillos, setListaPlatillosState] = useState([]); // Cambié el nombre del estado a setListaPlatillosState para evitar conflictos con la función listaPlatillos
     const [categorias, setCategorias] = useState([]);
     const [editarPlatillo, setEditarPlatilloState] = useState(false); // Cambié a setEditarPlatilloState
-    const [imagen, setImagen] = useState(null); // Estado para almacenar la imagen
+    const [imagen, setImagen] = useState("");
 
     // Obtener lista de categorías
     useEffect(() => {
@@ -46,20 +47,8 @@ function Platillos() {
 
     const guardarPlatillo = async () => {
         try {
-            const formData = new FormData();
-            formData.append("nombre", nombre);
-            formData.append("categoria_id", categoriaId);
-            formData.append("precio", precio);
-            if (imagen) {
-                formData.append("imagen", imagen);
-            }
-
-            await Axios.post("http://localhost:3001/platillos/guardar", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            await listarPlatillos();
+        await Axios.post("http://localhost:3001/platillos/guardar", {nombre, descripcion, categoria_id, precio, imagen});
+            listarPlatillos();
             limpiarCampos();
             Swal.fire({
                 title: "<strong>Registro exitoso!!!</strong>",
@@ -80,20 +69,8 @@ function Platillos() {
 
     const actualizarPlatillo = async () => {
         try {
-            const formData = new FormData();
-            formData.append("id", id);
-            formData.append("nombre", nombre);
-            formData.append("categoria_id", categoriaId);
-            formData.append("precio", precio);
-            formData.append("imagen", imagen);
-
-
-            await Axios.put("http://localhost:3001/platillos/actualizar", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            await listarPlatillos();
+            await Axios.put("http://localhost:3001/platillos/actualizar", { id, nombre, descripcion, categoria_id,  precio, imagen});
+            listarPlatillos();
             limpiarCampos();
             Swal.fire({
                 title: "<strong>Actualización exitosa!!!</strong>",
@@ -116,7 +93,7 @@ function Platillos() {
         setCategoriaId("");
         setPrecio("");
         setId("");
-        setImagen(null); // Limpiar imagen
+        setImagen(""); // Limpiar imagen
         setEditarPlatilloState(false); // Cambié a setEditarPlatilloState
     };
 
@@ -152,7 +129,7 @@ function Platillos() {
                         </div>
                         <div className="input-group mb-3">
                         <label className="plat">Categoria:</label>
-                            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+                            <select value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)}>
                                 <option value="">Seleccione una categoría</option>
                                 {categorias.map((categoria) => (
                                     <option key={categoria.id} value={categoria.id}>

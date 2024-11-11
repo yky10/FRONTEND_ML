@@ -1,3 +1,4 @@
+import "../style/empleado.css";
 import React, { useState, useEffect, useRef } from "react";
 import Axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -5,72 +6,69 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { AllowedAccess } from 'react-permission-role';
 import NoPermission from "./NoPermission";
-import "../style/empleado.css";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
-function ReporteVentasDiarias() {
-    const [ventas, setVentas] = useState([]);
-    const [ventasFiltradas, setVentasFiltradas] = useState([]);
-    const [search, setSearch] = useState("");
-    const [selectedDate, setSelectedDate] = useState(null); 
-    const [currentPage, setCurrentPage] = useState(1); // Página actual
-    const [itemsPerPage] = useState(5); // Número de elementos por página
-    const reportRef = useRef();
+function ReportePlatos() {
+    const [platos, setPlatos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
+    const [error, setError] = useState(""); // Estado para errores
+    const reportRef = useRef(); 
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
+
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
     useEffect(() => {
-        const fetchVentas = async (startDate = null, endDate = null) => {
+        const fetchData = async () => {
             try {
-                const response = await Axios.get("http://localhost:3001/reporte/ventas-diarias", {
-                    params: {
-                        startDate: startDate ? startDate.toISOString().slice(0, 10) : undefined,
-                        endDate: endDate ? endDate.toISOString().slice(0, 10) : undefined,
-                    },
-                });
-                setVentas(response.data.reporte);
-                setVentasFiltradas(response.data.reporte);
+                const platosResponse = await Axios.get("http://localhost:3001/platillos/listar");
+                setPlatos(platosResponse.data);
+                const categoriasResponse = await Axios.get("http://localhost:3001/categoria/listar");
+                setCategorias(categoriasResponse.data);
             } catch (error) {
-                console.error("Error al obtener ventas diarias:", error);
+                setError("Error al cargar los datos");
+                console.error("Error fetching data:", error);
             }
         };
-
-        fetchVentas();
+        fetchData();
     }, []);
 
-    // Función para manejar la búsqueda por texto
-    const handleSearch = (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        setSearch(searchTerm);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-        const filtered = ventas.filter(
-            (venta) =>
-                venta.nombre_usuario.toLowerCase().includes(searchTerm)
-        );
-        setVentasFiltradas(filtered);
-    };
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Función para manejar la selección de fecha
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        if (date) {
-            const formattedDate = date.toLocaleDateString();
-            const filteredByDate = ventas.filter((venta) => {
-                const fechaVenta = new Date(venta.fecha);
-                return fechaVenta.toLocaleDateString() === formattedDate;
-            });
-            setVentasFiltradas(filteredByDate);
-        } else {
-            setVentasFiltradas(ventas); 
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(platos.length / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const handleSort = (key) => {
+        let direction = "asc";
+        if (sortConfig.key === key && sortConfig.direction === "asc") {
+            direction = "desc";
         }
+        setSortConfig({ key, direction });
     };
 
-    // Función para formatear la fecha
-    const formatearFecha = (fecha) => {
-        const date = new Date(fecha);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+    const sortedItems = [...platos].sort((a, b) => {
+        let aField = a[sortConfig.key];
+        let bField = b[sortConfig.key];
+
+        if (aField < bField) {
+            return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (aField > bField) {
+            return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+    });
+
+    const currentSortedItems = sortedItems.slice(indexOfFirstItem, indexOfLastItem);
+
+    const getCategoriaNombre = (categoriaId) => {
+        const categoria = categorias.find((cat) => cat.id === categoriaId);
+        return categoria ? categoria.nombre : "No disponible";
     };
 
     // ** Llamada a generarPDF con título y descripción como cadenas de texto **
@@ -121,108 +119,58 @@ function ReporteVentasDiarias() {
         });
     };
 
-    // ** Lógica de paginación **
-    const indexOfLastVenta = currentPage * itemsPerPage;
-    const indexOfFirstVenta = indexOfLastVenta - itemsPerPage;
-    const currentVentas = ventasFiltradas.slice(indexOfFirstVenta, indexOfLastVenta);
-
-    const totalPages = Math.ceil(ventasFiltradas.length / itemsPerPage);
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
-
-    const paginate = (pageNumber) => {
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            setCurrentPage(pageNumber);
-        }
-    };
-
     return (
         <AllowedAccess 
             roles={["admin"]} 
-            permissions="manage-users" 
-            renderAuthFailed={<NoPermission />}
+            permissions="manage-users" /*view-report*/
+            renderAuthFailed={<NoPermission/>}
             isLoading={<p>Cargando...</p>}
         >
             <div className="container">
-                <h1>Informe de Ventas Diarias</h1>
+                <h1>Informe de Platos</h1>
                 <br />
-                <div className="d-flex justify-content-between mb-4">
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={handleSearch}
-                            className="search-input"
-                            placeholder="Buscar"
-                        />
-                    </div>
-
-                    <div>
-                        <DatePicker
-                            selected={selectedDate}
-                            onChange={handleDateChange}
-                            dateFormat="dd/MM/yyyy"
-                            className="form-control"
-                            placeholderText="  Selecciona una fecha"
-                        />
-                    </div>
-                </div>
-
+                {error && <div className="alert alert-danger">{error}</div>} {/* Mostrar errores */}
                 <div ref={reportRef}>
                     <table className="table table-striped">
                         <thead>
                             <tr>
-                                <th scope="col">Fecha</th>
-                                <th scope="col">Total Órdenes</th>
-                                <th scope="col">Total Ventas</th>
-                                <th scope="col">Nombre Usuario</th>
+                                <th scope="col" onClick={() => handleSort("id")}>Id</th>
+                                <th scope="col" onClick={() => handleSort("nombre")}>Nombre</th>
+                                <th scope="col" onClick={() => handleSort("categoria_id")}>Categoría</th>
+                                <th scope="col" onClick={() => handleSort("precio")}>Precio</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentVentas.map((venta, index) => (
-                                <tr key={index}>
-                                    <td>{formatearFecha(venta.fecha)}</td>
-                                    <td>{venta.total_ordenes}</td>
-                                    <td>{venta.total_ventas}</td>
-                                    <td>{venta.nombre_usuario}</td>
+                            {currentSortedItems.map((plato) => (
+                                <tr key={plato.id}>
+                                    <th>{plato.id}</th>
+                                    <td>{plato.nombre}</td>
+                                    <td>{getCategoriaNombre(plato.categoria_id)}</td>
+                                    <td>{plato.precio}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-
-                <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
+                <div className="d-flex justify-content-end"> 
+                <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
                         Generar PDF
                     </button>
                 </div>
-
                 <nav>
                     <ul className="pagination">
-                        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                            <a href="#!" className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                Anterior
-                            </a>
-                        </li>
-
                         {pageNumbers.map((number) => (
-                            <li
-                                key={number}
-                                className={`page-item ${currentPage === number ? "active" : ""}`}
-                            >
-                                <a href="#!" className="page-link" onClick={() => paginate(number)}>
+                            <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+                                <a
+                                    href="#!"
+                                    className="page-link"
+                                    onClick={() => paginate(number)}
+                                    style={{ cursor: currentPage === number ? 'default' : 'pointer' }} 
+                                >
                                     {number}
                                 </a>
                             </li>
                         ))}
-
-                        <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                            <a href="#!" className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                Siguiente
-                            </a>
-                        </li>
                     </ul>
                 </nav>
             </div>
@@ -230,4 +178,4 @@ function ReporteVentasDiarias() {
     );
 }
 
-export default ReporteVentasDiarias;
+export default ReportePlatos;

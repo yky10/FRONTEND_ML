@@ -13,7 +13,8 @@ import "../style/empleado.css";
         const [search, setSearch] = useState("");
         const reportRef = useRef();
         const [currentPage, setCurrentPage] = useState(1);
-        const [itemsPerPage] = useState(5); // Cambiar el número de elementos por página si es necesario
+        const [itemsPerPage] = useState(15); // Cambiar el número de elementos por página si es necesario
+
 
         useEffect(() => {
             const fetchVentas = async () => {

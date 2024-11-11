@@ -16,7 +16,7 @@ function Empleado() {
   const [personalist, setpersona] = useState([]);
   const [editar, seteditarpersona] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
   const [searchTerm, setSearchTerm] = useState("");
 
   const add = () => {
@@ -225,7 +225,7 @@ function Empleado() {
               <tr>
                 <th>Nombre</th>
                 <th>Telefono</th>
-                <th>Email</th>
+                <th>Dirección</th>
                 <th>Acciones</th>
               </tr>
             </thead>

@@ -8,8 +8,10 @@ function ReporteVentasPorMesa() {
     const [ventasPorMesa, setVentasPorMesa] = useState([]);
     const [ventasFiltradas, setVentasFiltradas] = useState([]);
     const [search, setSearch] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); // Definir el número de items por página
+    const [itemsPerPage] = useState(20);
     const reportRef = useRef();
 
     useEffect(() => {
@@ -29,12 +31,31 @@ function ReporteVentasPorMesa() {
     const handleSearch = (e) => {
         const searchTerm = e.target.value.toLowerCase();
         setSearch(searchTerm);
+        filtrarResultados(searchTerm, startDate, endDate);
+    };
 
-        const filtered = ventasPorMesa.filter(
-            (venta) =>
+    const handleDateChange = (start, end) => {
+        setStartDate(start);
+        setEndDate(end);
+        filtrarResultados(search, start, end);
+    };
+
+    const filtrarResultados = (searchTerm, start, end) => {
+        const filtered = ventasPorMesa.filter((venta) => {
+            const ventaFecha = new Date(venta.fecha); // Reemplaza `fecha` con el nombre correcto de la columna de fecha en tus datos
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
+
+            const matchesSearch =
                 venta.numero_mesa.toString().includes(searchTerm) ||
-                venta.total_ventas.toString().includes(searchTerm)
-        );
+                venta.total_ventas.toString().includes(searchTerm);
+
+            const matchesDate =
+                (!startDate || ventaFecha >= startDate) &&
+                (!endDate || ventaFecha <= endDate);
+
+            return matchesSearch && matchesDate;
+        });
         setVentasFiltradas(filtered);
     };
 
@@ -47,10 +68,7 @@ function ReporteVentasPorMesa() {
         setVentasFiltradas(sortedData);
     };
 
-    // Función para manejar la paginación
-    const paginate = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const totalPages = Math.ceil(ventasFiltradas.length / itemsPerPage);
     const currentData = ventasFiltradas.slice(
@@ -58,93 +76,73 @@ function ReporteVentasPorMesa() {
         currentPage * itemsPerPage
     );
 
-    // ** Llamada a generarPDF con título y descripción como cadenas de texto **
-    const titulo = "Informe de Ventas por Mesa"; // Título como cadena
-    const descripcion = "Este reporte muestra el total de ventas por cada mesa en el sistema."; // Descripción como cadena
-
-    const contenidoTabla = ventasFiltradas.map(venta => 
-        `Mesa: ${venta.numero_mesa}, Total Ventas: ${parseFloat(venta.total_ventas).toFixed(2)}`
-    ).join('\n'); // Crear contenido dinámico para la tabla
-
     const generarPDF = (titulo, descripcion, contenidoTabla) => {
         const input = reportRef.current;
-
-        // Definir márgenes (en mm)
         const margenIzquierdo = 14;
         const margenSuperior = 20;
         const margenDerecho = 14;
-        const margenInferior = 14;
 
-        // Ancho de la página A4
-        const imgWidth = 210 - margenIzquierdo - margenDerecho; // Ancho total menos márgenes
+        const imgWidth = 210 - margenIzquierdo - margenDerecho;
 
-        // Generar la imagen del contenido de la tabla usando html2canvas
         html2canvas(input, {
-            margin: { top: margenSuperior, left: margenIzquierdo, right: margenDerecho, bottom: margenInferior }
+            margin: { top: margenSuperior, left: margenIzquierdo, right: margenDerecho },
         }).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
             const pdf = new jsPDF();
-
-            // Cambiar el color del título a naranja
-            pdf.setTextColor(255, 165, 0); // RGB para el color naranja
+            pdf.setTextColor(255, 165, 0);
             pdf.setFontSize(18);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text(String(titulo), margenIzquierdo, margenSuperior); // Título dinámico como string
-
-            // Descripción debajo del título
+            pdf.setFont("helvetica", "bold");
+            pdf.text(String(titulo), margenIzquierdo, margenSuperior);
             pdf.setFontSize(12);
-            pdf.setFont('helvetica', 'normal');
-            pdf.text(String(descripcion), margenIzquierdo, margenSuperior + 10); // Descripción dinámica como string
-
-            // Línea separadora debajo de la descripción
+            pdf.text(String(descripcion), margenIzquierdo, margenSuperior + 10);
             pdf.setLineWidth(0.5);
-            pdf.line(margenIzquierdo, margenSuperior + 12, 196 - margenDerecho, margenSuperior + 12);  // Línea horizontal
-
-            // Fecha de generación y número de página
+            pdf.line(margenIzquierdo, margenSuperior + 12, 196 - margenDerecho, margenSuperior + 12);
             pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'normal');
-            const fechaGeneracion = new Date().toLocaleDateString(); // formato dd/mm/yyyy
+            const fechaGeneracion = new Date().toLocaleDateString();
             pdf.text("Fecha de generación: " + fechaGeneracion, margenIzquierdo, margenSuperior + 25);
-            pdf.text("Página: " + pdf.internal.getNumberOfPages(), 180, margenSuperior + 25); // Número de página dinámico
-
-            // Agregar la imagen de la tabla, respetando los márgenes
+            pdf.text("Página: " + pdf.internal.getNumberOfPages(), 180, margenSuperior + 25);
             pdf.addImage(imgData, "PNG", margenIzquierdo, margenSuperior + 30, imgWidth, canvas.height * imgWidth / canvas.width);
             
-            // Generar la vista previa del PDF (en lugar de descarga directa)
-            const previewBlob = pdf.output('blob');
+            const previewBlob = pdf.output("blob");
             const url = URL.createObjectURL(previewBlob);
-            
-            // Abrir la vista previa en una nueva ventana
-            const previewWindow = window.open(url, '_blank');
-
-            // Después de cargar la ventana de vista previa, podemos permitir al usuario imprimir o descargar
+            const previewWindow = window.open(url, "_blank");
             previewWindow.onload = () => {
-                previewWindow.print(); // Esto abrirá el cuadro de diálogo de impresión automáticamente
+                previewWindow.print();
             };
-
-            // Si prefieres permitir que el usuario descargue el archivo manualmente, descomenta esta línea
-            // pdf.save('reporte_ventas_por_mesa.pdf');
         });
     };
 
-    // Crear los números de página para mostrar
     const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
+    for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
 
     return (
         <div className="container">
             <h1>Informe de Ventas por Mesa</h1>
             <br />
-            <div className="d-flex justify-content-end mb-4">
+            <div className="d-flex justify-content-between mb-4">
                 <div className="search-container">
                     <input
                         type="text"
                         value={search}
-                        onChange={handleSearch} // Llama a la función de búsqueda
+                        onChange={handleSearch}
                         className="search-input"
                         placeholder="Buscar"
+                    />
+                </div>
+                <div className="date-filter-container d-flex">
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => handleDateChange(e.target.value, endDate)}
+                        className="form-control mx-1"
+                        placeholder="Fecha de inicio"
+                    />
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => handleDateChange(startDate, e.target.value)}
+                        className="form-control mx-1"
+                        placeholder="Fecha de fin"
                     />
                 </div>
             </div>
@@ -153,6 +151,8 @@ function ReporteVentasPorMesa() {
                 <table className="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
+                            <th scope="col" onClick={() => handleSort("anio")}>Año</th>
+                            <th scope="col" onClick={() => handleSort("mes")}>Mes</th>
                             <th scope="col" onClick={() => handleSort("numero_mesa")}>Número de Mesa</th>
                             <th scope="col" onClick={() => handleSort("total_ventas")}>Total Ventas</th>
                         </tr>
@@ -160,11 +160,13 @@ function ReporteVentasPorMesa() {
                     <tbody>
                         {currentData.length === 0 ? (
                             <tr>
-                                <td colSpan="2">No se encontraron resultados</td>
+                                <td colSpan="4">No se encontraron resultados</td>
                             </tr>
                         ) : (
                             currentData.map((venta, index) => (
                                 <tr key={index}>
+                                    <td>{venta.anio}</td>
+                                    <td>{venta.mes}</td>
                                     <td>{venta.numero_mesa}</td>
                                     <td>{parseFloat(venta.total_ventas).toFixed(2)}</td>
                                 </tr>
@@ -174,26 +176,21 @@ function ReporteVentasPorMesa() {
                 </table>
             </div>
             <div className="d-flex justify-content-end">
-                <button className="btn btn-primary" onClick={() => generarPDF(titulo, descripcion, contenidoTabla)}>
+                <button className="btn btn-primary" onClick={() => generarPDF("Informe de Ventas por Mesa", "Este reporte muestra el total de ventas por cada mesa en el sistema.", currentData)}>
                     Generar PDF
                 </button>
             </div>
-            {/* Paginación */}
             <nav>
-                    <ul className="pagination">
-                        {pageNumbers.map((number) => (
-                            <li key={number} className="page-item">
-                                <a
-                                    href="#!"
-                                    className="page-link"
-                                    onClick={() => paginate(number)}
-                                >
-                                    {number}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
+                <ul className="pagination">
+                    {pageNumbers.map((number) => (
+                        <li key={number} className="page-item">
+                            <a href="#!" className="page-link" onClick={() => paginate(number)}>
+                                {number}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
         </div>
     );
 }
