@@ -155,10 +155,10 @@ function ReporteVentasPlatillo() {
                     <div className="search-container">
                         <input
                             type="text"
-                            value={search}
+                            value={search}  
                             onChange={handleSearch} // Llama a la función de búsqueda
                             className="search-input"
-                            placeholder="Buscar"
+                            placeholder="Buscar por nombre, cantidad o total"
                         />
                     </div>
                 </div>

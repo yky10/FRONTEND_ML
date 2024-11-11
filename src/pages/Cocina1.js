@@ -50,7 +50,7 @@ const Cocina = () => {
         <div className="container-fluid cocina-container">
             <div className="row">
                 <div className="col-md-12">
-                    <h2 className="text-center my-4"><strong>Órdenes Activas</strong></h2>
+                    <h2 className="text-center my-4">Órdenes Activas</h2>
                     <div className="row">
                         {ordenes.map((orden) => (
                             <div key={orden.ordenId} className="col-lg-3 col-md-4 col-sm-6 mb-4">
@@ -81,14 +81,14 @@ const Cocina = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    
+                                    <div className="card-footer">
                                         <Button 
                                             className="btn btn-mark-as-done"
                                             onClick={() => marcarComoListo(orden.ordenId)}
                                         >
                                             <FontAwesomeIcon icon={faCheckCircle} /> Marcar como Listo
                                         </Button>
-                                    
+                                    </div>
                                 </div>
                             </div>
                         ))}

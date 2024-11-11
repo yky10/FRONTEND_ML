@@ -131,7 +131,7 @@ const Sidebar = () => {
                             className="btn btn-link nav-link text-white d-flex align-items-center"
                             onClick={toggleClientes}
                         >
-                            <i class='bx bxs-user-detail'></i>
+                            <i className='bx bxs-user-detail'></i>
                             <span className="me-3">Clientes</span>
                             <i className={`bi ms-auto ${showClientes ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
                         </button>
@@ -160,7 +160,7 @@ const Sidebar = () => {
                             className="btn btn-link nav-link text-white d-flex align-items-center"
                             onClick={toggleMenu}
                         >
-                            <i class='bx bxs-food-menu'></i>
+                            <i className='bx bxs-food-menu'></i>
                             <span className="me-3">Menu</span>
                             <i className={`bi ms-auto ${showMenu ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
                         </button>
@@ -221,13 +221,13 @@ const Sidebar = () => {
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
                                     <Link to="/frontmesero" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i class='bx bx-edit'></i>
+                                        <i className='bx bx-edit'></i>
                                         <span>Tomar Orden</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/ordeneslistas" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i class='bx bx-list-check'></i>
+                                        <i className='bx bx-list-check'></i>
                                         <span>Ordenes Listas</span>
                                     </Link>
                                 </li>
@@ -259,7 +259,6 @@ const Sidebar = () => {
                                         <span>Órdenes Activas</span>
                                     </Link>
                                 </li>
-                             
                             </ul>
                         )}
                     </li>
@@ -269,7 +268,7 @@ const Sidebar = () => {
                             className="btn btn-link nav-link text-white d-flex align-items-center"
                             onClick={toggleReportes}
                         >
-                        <i class='bx bxs-report'></i>
+                        <i className='bx bxs-report'></i>
                             <span className="me-3">Reportes</span>
                             <i className={`bi ms-auto ${showReportes ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
                         </button>
@@ -278,25 +277,25 @@ const Sidebar = () => {
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item mb-2">
                                     <Link to="/ventasdiarias" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i class='bx bx-edit'></i>
+                                        <i className='bx bx-edit'></i>
                                         <span>Ventas Diarias</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/repventasplatillo " className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i class='bx bx-list-check'></i>
+                                        <i className='bx bx-list-check'></i>
                                         <span>Ventas por Platillos</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/repventasmesa" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}> 
-                                        <i class='bx bx-list-check'></i>
+                                        <i className='bx bx-list-check'></i>
                                         <span>Ventas por Mesa</span>
                                     </Link>
                                 </li>
                                 <li className="nav-item mb-2">
                                     <Link to="/repventasmes" className="nav-link text-white d-flex align-items-center" onClick={closeSidebar}>
-                                        <i class='bx bx-list-check'></i>
+                                        <i className='bx bx-list-check'></i>
                                         <span>Ventas por Mes</span>
                                     </Link>
                                 </li>

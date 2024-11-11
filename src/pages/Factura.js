@@ -239,7 +239,50 @@ const handleSearchClientChange = (e) => {
     setFilteredClients(clients);
   }
 };
+const handleGenerateInvoice = async (id_orden) => {
+  const clienteId = customerData.id; 
+  const ordenId = id_orden;
+  try {
+      const response = await Axios.post('http://localhost:3001/factura/guardar', {
+          cliente_id: clienteId,
+          orden_id: ordenId
+      });
 
+      // Verificar la respuesta en el frontend
+      console.log('Respuesta de la API:', response.data);
+
+      const invoiceId = response.data.id; // Ahora debería ser el ID generado
+      if (invoiceId) {
+          await Swal.fire({
+              icon: 'success',
+              title: '¡Factura Generada!',
+              text: `Factura generada exitosamente con ID:${invoiceId}`,
+              confirmButtonColor: '#3085d6',
+              timer: 2000,
+              timerProgressBar: true
+          });
+
+          generatePDF();
+          closeModal();
+          closeClientModal();
+      } else {
+          console.error("Error: No se recibió el ID de la factura.");
+      }
+  } catch (error) {
+      console.error("Error al generar la factura:", error);
+
+      let errorMessage = 'Error al generar la factura';
+      await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorMessage,
+          confirmButtonColor: '#3085d6'
+      });
+  }
+};
+
+
+/*
     const handleGenerateInvoice = async (id_orden) => {
       const clienteId = customerData.id; 
       const ordenId = id_orden;
@@ -248,11 +291,11 @@ const handleSearchClientChange = (e) => {
           cliente_id: clienteId,
           orden_id: ordenId
         });
-        const invoiceId = response.data.id;
+        //const invoiceId = response.data.id;
         await Swal.fire({
           icon: 'success',
           title: '¡Factura Generada!',
-          text: `Factura generada exitosamente con ID:${invoiceId}`,
+          text: `Factura generada exitosamente con ID:${id_orden}`,
           confirmButtonColor: '#3085d6',
           timer: 2000,
           timerProgressBar: true
@@ -261,7 +304,7 @@ const handleSearchClientChange = (e) => {
 
         closeModal(); 
         closeClientModal();
-       /* getOrdenEntregados(id_usuario);*/
+    
         
       } catch (error) {
         console.error("Error al generar la factura:", error);
@@ -275,7 +318,7 @@ const handleSearchClientChange = (e) => {
         });
       }
     };
-
+*/
     const generatePDF = () => {
       if (!selectedOrder || !selectedOrder.items) {
         console.error("No hay datos de la orden seleccionada para generar el PDF.");

@@ -157,7 +157,7 @@ function ReporteVentasDiarias() {
                             value={search}
                             onChange={handleSearch}
                             className="search-input"
-                            placeholder="Buscar"
+                            placeholder="Buscar por nombre de usuario"
                         />
                     </div>
 
